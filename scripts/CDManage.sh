@@ -106,12 +106,32 @@ insertTrack() {
 findRecord() {
 	echo -e "输入要查询的专辑内容： \c"
 	read searchStr
-	grep $searchStr $cd_file 2> /dev/null | sed 's/,/\t/g' | awk 'BEGIN{
-		print "   目录编号\t标题\t目录类型\t艺术家"
+	tmp=$(grep $searchStr $cd_file 2> /dev/null)
+	lineCount=$(echo $tmp | wc -l)
+	[ -n "$tmp" ] && {
+		echo $tmp | sed 's/,/\t/g' | awk 'BEGIN{
+			print "   目录编号\t标题\t目录类型\t艺术家"
+		}
+		{
+			print NR" "$0
+		}' | more
+		x=0
+		while [ $x -lt 1 -o $x -gt $lineCount ];
+		do
+			echo "选择一个要编辑的专辑的下标（1 ~ "$lineCount"）："
+			read x
+			if ! grep '^[[:digit:]]*$' <<< "$x" 1>/dev/null 2>&1; then
+				x=0
+				continue
+			fi
+			if [ $x -ge 1 -a $x -le $lineCount ]; then
+				echo $tmp | sed -n "${x}p"
+			fi
+		done
+	} || {
+		echo "没有找到要查询的专辑信息！"
 	}
-	{
-		print NR" "$0
-	}' | more
+	
 }
 
 setMenuChoice
