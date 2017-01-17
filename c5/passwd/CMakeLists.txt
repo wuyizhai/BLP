@@ -1,0 +1,7 @@
+cmake_minimum_required (VERSION 2.6)
+project (Passwd)
+set (Passwd_VERSION_MAJOR 1)
+set (Passwd_VERSION_MINOR 0)
+add_library (user SHARED user.cc)
+add_executable(passwd main.cc)
+target_link_libraries(passwd user)
